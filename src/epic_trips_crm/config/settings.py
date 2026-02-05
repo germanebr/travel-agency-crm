@@ -6,6 +6,7 @@ from epic_trips_crm.config.paths import env_file_path
 
 _UNSET = object()
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=str(env_file_path()),
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
 
 def require_database_url(value: object = _UNSET) -> str:
     """
