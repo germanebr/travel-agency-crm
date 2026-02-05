@@ -22,3 +22,13 @@ ignore = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
