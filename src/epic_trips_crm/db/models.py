@@ -21,10 +21,56 @@ from epic_trips_crm.db.base import Base
 
 SCHEMA = "epic_trips_crm"
 
+
+SCHEMA = "epic_trips_crm"
+
+trip_status_enum = ENUM(
+    "Próximo",
+    "Viajando",
+    "Finalizado",
+    "Cancelado",
+    name="trip_status",
+    schema=SCHEMA,
+    create_type=False,
+)
+
+sale_status_enum = ENUM(
+    "Reservada",
+    "Liquidada",
+    "Completa",
+    "Cancelada",
+    "No aplica",
+    name="sale_status",
+    schema=SCHEMA,
+    create_type=False,
+)
+
+provider_name_enum = ENUM(
+    "Aeromexico",
+    "Agent Cars",
+    "Bedsonline",
+    "Civitatis",
+    "Creatur",
+    "Disney",
+    "Expedia MX",
+    "Expedia USA",
+    "GRUPO LOMAS",
+    "Room res",
+    "Terrawind",
+    "VAX",
+    "Vacation Express",
+    "Viator",
+    "Virgin",
+    "Xcaret Sales",
+    name="provider_name",
+    schema=SCHEMA,
+    create_type=False,
+)
+
 # These enums already exist in Postgres. We reference them without creating types.
-trip_status_enum = ENUM("trip_status", schema=SCHEMA, create_type=False)
-sale_status_enum = ENUM("sale_status", schema=SCHEMA, create_type=False)
-provider_name_enum = ENUM("provider_name", schema=SCHEMA, create_type=False)
+# trip_status_enum = ENUM("trip_status", schema=SCHEMA, create_type=False)
+# sale_status_enum = ENUM("sale_status", schema=SCHEMA, create_type=False)
+# provider_name_enum = ENUM("provider_name", schema=SCHEMA, create_type=False)
 
 
 class Client(Base):
