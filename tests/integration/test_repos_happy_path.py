@@ -2,17 +2,15 @@ import uuid
 from datetime import date
 
 import pytest
-
 from sqlalchemy import text
 
+from epic_trips_crm.config.settings import settings
 from epic_trips_crm.db.engine import get_session
 from epic_trips_crm.db.enums import ProviderName, SaleStatus, TripStatus
 from epic_trips_crm.db.repositories.clients import ClientRepository
 from epic_trips_crm.db.repositories.commissions import CommissionRepository
 from epic_trips_crm.db.repositories.sales import SaleRepository
 from epic_trips_crm.db.repositories.trips import TripRepository
-
-from epic_trips_crm.config.settings import settings
 
 pytestmark = pytest.mark.integration
 
