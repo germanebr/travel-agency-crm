@@ -82,8 +82,12 @@ def main() -> None:
     args = parser.parse_args()
     _require_portal_settings()
 
+    portal_url = settings.portal_url
+    if not portal_url:
+        raise RuntimeError("PORTAL_URL is missing")
+
     portal = PlaywrightPortalClient(
-        base_url=settings.portal_url,
+        base_url=portal_url,
         headless=not getattr(args, "headful", False),
         default_form_id="EVO2026153349",
     )
