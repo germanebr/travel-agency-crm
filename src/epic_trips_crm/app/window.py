@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QSplitter
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -40,7 +41,7 @@ class MainWindow(QMainWindow):
         self.config_status = ConfigStatus()
         layout.addWidget(self.config_status)
 
-        splitter = QSplitter(Qt.Vertical)
+        splitter = QSplitter(Qt.Orientation.Vertical)
         layout.addWidget(splitter, stretch=1)
 
         # Tabs (functionalities wired in later branches)
@@ -65,7 +66,7 @@ class MainWindow(QMainWindow):
         w = QWidget()
         v = QVBoxLayout(w)
         label = QLabel(text)
-        label.setAlignment(Qt.AlignCenter)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         v.addWidget(label)
         return w
 
