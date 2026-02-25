@@ -17,6 +17,7 @@ class FakePortalClient:
     Why it matters:
     - Unit tests must not hit the real portal.
     """
+
     def __init__(self, **kwargs):
         self.calls: list[tuple[str, object]] = []
 

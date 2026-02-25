@@ -7,6 +7,7 @@ from epic_trips_crm.config.paths import env_file_path
 
 _UNSET = object()
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=str(env_file_path()),
@@ -24,6 +25,7 @@ class Settings(BaseSettings):
     portal_password: str | None = Field(default=None, alias="PORTAL_PASSWORD")
     portal_headless: bool = Field(default=True, alias="PORTAL_HEADLESS")
 
+
 def require_database_url(value: object = _UNSET) -> str:
     """
     If `value` is provided (even None), use it. Otherwise fall back to settings.database_url.
@@ -37,5 +39,6 @@ def require_database_url(value: object = _UNSET) -> str:
         )
 
     return url
+
 
 settings = Settings()

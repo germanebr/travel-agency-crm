@@ -31,9 +31,8 @@ Behavior summary
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 from datetime import date
+from pathlib import Path
 
 from playwright.sync_api import TimeoutError as PWTimeoutError
 from playwright.sync_api import sync_playwright
@@ -68,7 +67,9 @@ class PortalSelectors:
 
     # Hub actions
     new_commission: str = "css=div.dt-buttons > button.btn.btn-primary"
-    hub_table_row_by_id: str = "xpath=//table[@id='agentInvoiceTable']//tr[td[normalize-space()='{form_id}']]"
+    hub_table_row_by_id: str = (
+        "xpath=//table[@id='agentInvoiceTable']//tr[td[normalize-space()='{form_id}']]"
+    )
 
     # Traveler
     new_traveler_btn: str = "css=button[title='Create a new traveler (Shortcut: n)']"
@@ -90,7 +91,9 @@ class PortalSelectors:
     # Supplier autocomplete
     supplier_name: str = "#SupplierName"
     supplier_id: str = "#SupplierId"
-    supplier_menu_item_wrapper: str = "css=ul.ui-autocomplete li.ui-menu-item div.ui-menu-item-wrapper"
+    supplier_menu_item_wrapper: str = (
+        "css=ul.ui-autocomplete li.ui-menu-item div.ui-menu-item-wrapper"
+    )
 
     # Common component fields
     booking_date: str = "#BookingDate"
@@ -262,7 +265,7 @@ class PlaywrightPortalClient(PortalClient):
             self._debug_dump(f"final_submit_timeout_{form_id}")
             raise RuntimeError(f"FINAL submit failed (timeout) for {form_id}: {e}") from e
 
-        except Exception as e:
+        except Exception:
             self._debug_dump(f"final_submit_error_{form_id}")
             raise
 
@@ -395,14 +398,24 @@ class PlaywrightPortalClient(PortalClient):
 
     def _parse_iso_date(self, s: str) -> date:
         return date.fromisoformat(s)  # expects 'YYYY-MM-DD'
-    
+
     def _detect_date_format(self, page, selector: str) -> str:
         """
         Returns 'MDY' or 'DMY' based on placeholder/attributes.
         Defaults to 'MDY' if unknown.
         """
-        placeholder = page.eval_on_selector(selector, "el => (el.getAttribute('placeholder') || '').toUpperCase()") or ""
-        aria = page.eval_on_selector(selector, "el => (el.getAttribute('aria-label') || '').toUpperCase()") or ""
+        placeholder = (
+            page.eval_on_selector(
+                selector, "el => (el.getAttribute('placeholder') || '').toUpperCase()"
+            )
+            or ""
+        )
+        aria = (
+            page.eval_on_selector(
+                selector, "el => (el.getAttribute('aria-label') || '').toUpperCase()"
+            )
+            or ""
+        )
 
         hint = f"{placeholder} {aria}"
         if "DD/MM" in hint:
@@ -430,7 +443,10 @@ class PlaywrightPortalClient(PortalClient):
         - If input type is 'date' -> fills ISO 'YYYY-MM-DD'.
         - Else -> detects expected display format and fills accordingly.
         """
-        input_type = page.eval_on_selector(selector, "el => (el.getAttribute('type') || '').toLowerCase()") or ""
+        input_type = (
+            page.eval_on_selector(selector, "el => (el.getAttribute('type') || '').toLowerCase()")
+            or ""
+        )
 
         # HTML date input: must be ISO
         if input_type == "date":
@@ -440,7 +456,7 @@ class PlaywrightPortalClient(PortalClient):
         # Text input or custom widget: use format detection
         fmt = self._detect_date_format(page, selector)
         page.locator(selector).fill(self._format_date(d, fmt))
-    
+
     def _require_page(self):
         if self._page is None:
             raise RuntimeError("Playwright page not initialized. Did _start() run?")
@@ -568,6 +584,7 @@ class PlaywrightPortalClient(PortalClient):
         then verifies SupplierId populated (non-empty and not all-zero GUID).
         - Retries once with a slower/cleaner sequence.
         """
+
         def supplier_id_is_valid() -> bool:
             return page.eval_on_selector(
                 self.sel.supplier_id,
@@ -670,7 +687,9 @@ class PlaywrightPortalClient(PortalClient):
         try:
             btn.click(timeout=15_000)
         except Exception:
-            page.eval_on_selector("form#mainForm button.btn.btn-primary[type='submit']", "el => el.click()")
+            page.eval_on_selector(
+                "form#mainForm button.btn.btn-primary[type='submit']", "el => el.click()"
+            )
 
     def _set_currency_usd(self, page) -> None:
         """
@@ -693,7 +712,6 @@ class PlaywrightPortalClient(PortalClient):
 
         # Determine tag/type
         tag = page.eval_on_selector(sel, "el => (el.tagName || '').toLowerCase()") or ""
-        typ = page.eval_on_selector(sel, "el => (el.getAttribute('type') || '').toLowerCase()") or ""
 
         try:
             if tag == "select":
@@ -726,7 +744,6 @@ class PlaywrightPortalClient(PortalClient):
         if not value:
             self._debug_dump("currency_not_set")
             raise RuntimeError("Currency could not be set (still empty after attempts).")
-
 
     def _new_component(self, page, c: dict) -> None:
         """
@@ -829,7 +846,6 @@ class PlaywrightPortalClient(PortalClient):
 
         self._save_component_and_verify(page, c["booking_reference"])
 
-
     def _new_insurance(self, page, c: dict) -> None:
         page.locator(self.sel.component_insurance).click(timeout=15_000)
         self._fill_common_component_fields(page, c)
@@ -870,7 +886,9 @@ class PlaywrightPortalClient(PortalClient):
             save_btn.click(timeout=15_000)
         except Exception:
             # fallback: JS click
-            page.eval_on_selector("form#mainForm button.btn.btn-primary[type='submit']", "el => el.click()")
+            page.eval_on_selector(
+                "form#mainForm button.btn.btn-primary[type='submit']", "el => el.click()"
+            )
 
         # quick settle
         page.wait_for_timeout(500)
@@ -927,7 +945,9 @@ class PlaywrightPortalClient(PortalClient):
             return
         except Exception as e:
             self._debug_dump(f"save_unverified_{booking_reference}")
-            raise RuntimeError(f"Component save could not be verified for {booking_reference}") from e
+            raise RuntimeError(
+                f"Component save could not be verified for {booking_reference}"
+            ) from e
 
     def _final_submit_and_verify(self, page) -> None:
         """
@@ -943,6 +963,5 @@ class PlaywrightPortalClient(PortalClient):
         - Always raises to prevent accidental submission.
         """
         raise RuntimeError(
-            "Final submit is DISABLED by policy (production-only portal). "
-            "Do not call this method."
+            "Final submit is DISABLED by policy (production-only portal). Do not call this method."
         )
