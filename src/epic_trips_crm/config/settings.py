@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from epic_trips_crm.config.paths import env_file_path
 
 _UNSET = object()
-
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -18,12 +18,11 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     database_url: str | None = None
-    portal_username: str | None = None
-    portal_password: str | None = None
 
-
-settings = Settings()
-
+    portal_url: str | None = Field(default=None, alias="PORTAL_URL")
+    portal_username: str | None = Field(default=None, alias="PORTAL_USERNAME")
+    portal_password: str | None = Field(default=None, alias="PORTAL_PASSWORD")
+    portal_headless: bool = Field(default=True, alias="PORTAL_HEADLESS")
 
 def require_database_url(value: object = _UNSET) -> str:
     """
@@ -38,3 +37,5 @@ def require_database_url(value: object = _UNSET) -> str:
         )
 
     return url
+
+settings = Settings()

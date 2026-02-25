@@ -8,6 +8,7 @@ from typing import Protocol
 class PortalCredentials:
     username: str
     password: str
+    portal_real_submit: bool = False
 
 
 @dataclass(frozen=True)
