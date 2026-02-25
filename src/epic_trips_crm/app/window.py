@@ -1,18 +1,21 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QSplitter
 from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QTabWidget,
     QLabel,
+    QMainWindow,
     QSplitter,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
 
-from epic_trips_crm.app.widgets.log_panel import LogPanel
+from epic_trips_crm.app.tabs.checklists_tab import ChecklistsTab
+from epic_trips_crm.app.tabs.clients_tab import ClientsTab
+from epic_trips_crm.app.tabs.sales_tab import SalesTab
+from epic_trips_crm.app.tabs.trips_tab import TripsTab
 from epic_trips_crm.app.widgets.config_status import ConfigStatus
+from epic_trips_crm.app.widgets.log_panel import LogPanel
 
 
 class MainWindow(QMainWindow):
@@ -44,14 +47,30 @@ class MainWindow(QMainWindow):
         splitter = QSplitter(Qt.Orientation.Vertical)
         layout.addWidget(splitter, stretch=1)
 
-        # Tabs (functionalities wired in later branches)
+        # 1) Create log panel FIRST
+        self.log_panel = LogPanel()
+        splitter.addWidget(self.log_panel)
+
+        # 2) Create tabs AFTER log panel exists
         self.tabs = QTabWidget()
         splitter.addWidget(self.tabs)
 
-        self.tabs.addTab(self._placeholder_tab("Clients (coming next)"), "Clients")
-        self.tabs.addTab(self._placeholder_tab("Trips (coming next)"), "Trips")
-        self.tabs.addTab(self._placeholder_tab("Sales (coming next)"), "Sales")
-        self.tabs.addTab(self._placeholder_tab("Checklists (coming next)"), "Checklists")
+        # (Optional) Put tabs on top and logs on bottom by swapping add order:
+        # - add tabs first, then log panel, but still instantiate log_panel before tabs.
+        # We'll keep visual order: tabs top, logs bottom:
+        splitter.insertWidget(0, self.tabs)
+        splitter.insertWidget(1, self.log_panel)
+
+        splitter.setStretchFactor(0, 4)
+        splitter.setStretchFactor(1, 1)
+
+        # Replace placeholder Clients with real tab
+        self.tabs.addTab(ClientsTab(log_fn=self.log), "Clients")
+        self.tabs.addTab(TripsTab(log_fn=self.log), "Trips")
+        self.tabs.addTab(SalesTab(log_fn=self.log), "Sales")
+        self.tabs.addTab(ChecklistsTab(log_fn=self.log), "Checklists")
+
+        # Keep placeholders for now (we’ll implement next)
         self.tabs.addTab(self._placeholder_tab("Portal (coming next)"), "Portal")
 
         # Log panel
@@ -71,4 +90,5 @@ class MainWindow(QMainWindow):
         return w
 
     def log(self, msg: str) -> None:
-        self.log_panel.append(msg)
+        if hasattr(self, "log_panel") and self.log_panel is not None:
+            self.log_panel.append(msg)

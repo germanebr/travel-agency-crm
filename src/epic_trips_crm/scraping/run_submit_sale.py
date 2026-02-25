@@ -55,28 +55,43 @@ def main() -> None:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     # --- DB-driven mode ---
-    p_submit = sub.add_parser("submit-sale", help="DB-driven: load sale from Neon and run portal flow (NO final submit).")
+    p_submit = sub.add_parser(
+        "submit-sale", help="DB-driven: load sale from Neon and run portal flow (NO final submit)."
+    )
     p_submit.add_argument("--sale-id", type=int, required=True)
-    p_submit.add_argument("--headful", action="store_true", help="Show the browser window for debugging.")
+    p_submit.add_argument(
+        "--headful", action="store_true", help="Show the browser window for debugging."
+    )
 
     # --- Portal-only mode ---
-    p_portal = sub.add_parser("portal-existing-form", help="Portal-only: open an existing form and add traveler/components (NO DB).")
+    p_portal = sub.add_parser(
+        "portal-existing-form",
+        help="Portal-only: open an existing form and add traveler/components (NO DB).",
+    )
     p_portal.add_argument("--form-id", type=str, default="EVO2026153349")
-    p_portal.add_argument("--traveler-json", type=str, default=None, help="Path to traveler JSON dict.")
-    p_portal.add_argument("--components-json", type=str, default=None, help="Path to components JSON list.")
-    p_portal.add_argument("--headful", action="store_true", help="Show the browser window for debugging.")
+    p_portal.add_argument(
+        "--traveler-json", type=str, default=None, help="Path to traveler JSON dict."
+    )
+    p_portal.add_argument(
+        "--components-json", type=str, default=None, help="Path to components JSON list."
+    )
+    p_portal.add_argument(
+        "--headful", action="store_true", help="Show the browser window for debugging."
+    )
 
     # --- Portal-final-submit mode ---
     p_final = sub.add_parser(
         "portal-final-submit",
-        help="DANGEROUS: Final-submit an existing form in the portal (irreversible)."
+        help="DANGEROUS: Final-submit an existing form in the portal (irreversible).",
     )
     p_final.add_argument("--form-id", type=str, required=True)
-    p_final.add_argument("--headful", action="store_true", help="Show the browser window for debugging.")
+    p_final.add_argument(
+        "--headful", action="store_true", help="Show the browser window for debugging."
+    )
     p_final.add_argument(
         "--i-understand-this-will-submit",
         action="store_true",
-        help="Required safety flag. Without this, the command refuses to run."
+        help="Required safety flag. Without this, the command refuses to run.",
     )
 
     args = parser.parse_args()
@@ -113,7 +128,9 @@ def main() -> None:
             }
 
             result = portal.submit_sale(payload)
-            print(f"OK: portal-only existing form updated, confirmation_id={result.confirmation_id}")
+            print(
+                f"OK: portal-only existing form updated, confirmation_id={result.confirmation_id}"
+            )
             return
 
         if args.cmd == "submit-sale":
@@ -123,7 +140,7 @@ def main() -> None:
                 outcome = service.submit_sale(session=session, sale_id=args.sale_id, creds=creds)
                 print(f"OK: sale_id={outcome.sale_id} confirmation_id={outcome.confirmation_id}")
             return
-        
+
         if args.cmd == "portal-final-submit":
             if not args.i_understand_this_will_submit:
                 raise RuntimeError(
@@ -131,7 +148,9 @@ def main() -> None:
                 )
 
             result = portal.final_submit_existing_form(args.form_id)
-            print(f"OK: final-submitted form_id={args.form_id} confirmation_id={result.confirmation_id}")
+            print(
+                f"OK: final-submitted form_id={args.form_id} confirmation_id={result.confirmation_id}"
+            )
             return
 
     finally:

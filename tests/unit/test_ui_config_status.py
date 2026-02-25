@@ -6,6 +6,6 @@ from epic_trips_crm.app.widgets.config_status import ConfigStatus
 
 
 def test_config_status_instantiates():
-    app = QApplication.instance() or QApplication(sys.argv)
+    _ = QApplication.instance() or QApplication(sys.argv)
     w = ConfigStatus()
     assert w is not None

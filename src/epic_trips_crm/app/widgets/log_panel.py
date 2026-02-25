@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPlainTextEdit
+from PySide6.QtWidgets import QLabel, QPlainTextEdit, QVBoxLayout, QWidget
 
 
 class LogPanel(QWidget):
