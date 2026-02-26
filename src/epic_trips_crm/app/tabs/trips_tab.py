@@ -56,8 +56,8 @@ class TripsTab(QWidget):
         self.btn_refresh.clicked.connect(self.refresh)
         header.addWidget(self.btn_refresh)
 
-        # Updated to include all repository fields
-        self.table = QTableWidget(0, 11)
+        # Updated to include portal_form_ref
+        self.table = QTableWidget(0, 12)
         self.table.setHorizontalHeaderLabels(
             [
                 "ID",
@@ -69,6 +69,7 @@ class TripsTab(QWidget):
                 "Companions",
                 "Flights",
                 "Reservation ID",
+                "Commission Form ID",
                 "Checklist ID",
                 "Notes",
             ]
@@ -97,12 +98,14 @@ class TripsTab(QWidget):
         self.end_month = QLineEdit()
         self.end_year = QLineEdit()
 
-        # Missing fields from repository (now included)
         self.companions = QLineEdit()
         self.flights = QLineEdit()
         self.reservation_id = QLineEdit()
-        self.checklist_id = QLineEdit()
 
+        # NEW
+        self.portal_form_ref = QLineEdit()
+
+        self.checklist_id = QLineEdit()
         self.notes = QLineEdit()
 
         form.addRow("Trip name*", self.trip_name)
@@ -117,6 +120,7 @@ class TripsTab(QWidget):
         form.addRow("Companions", self.companions)
         form.addRow("Flights", self.flights)
         form.addRow("Reservation ID", self.reservation_id)
+        form.addRow("Commission Form ID", self.portal_form_ref)
         form.addRow("Checklist ID", self.checklist_id)
 
         form.addRow("Notes", self.notes)
@@ -143,6 +147,7 @@ class TripsTab(QWidget):
         self.companions.clear()
         self.flights.clear()
         self.reservation_id.clear()
+        self.portal_form_ref.clear()
         self.checklist_id.clear()
         self.notes.clear()
         self.status.setCurrentIndex(0)
@@ -179,10 +184,11 @@ class TripsTab(QWidget):
                     8,
                     QTableWidgetItem("" if t.reservation_id is None else str(t.reservation_id)),
                 )
+                self.table.setItem(r, 9, QTableWidgetItem(t.portal_form_ref or ""))
                 self.table.setItem(
-                    r, 9, QTableWidgetItem("" if t.checklist_id is None else str(t.checklist_id))
+                    r, 10, QTableWidgetItem("" if t.checklist_id is None else str(t.checklist_id))
                 )
-                self.table.setItem(r, 10, QTableWidgetItem(t.notes or ""))
+                self.table.setItem(r, 11, QTableWidgetItem(t.notes or ""))
 
             self.log(f"Trips refreshed: {len(trips)}")
         except Exception as e:
@@ -234,6 +240,8 @@ class TripsTab(QWidget):
             QMessageBox.warning(self, "Validation", "Reservation ID must be an integer.")
             return
 
+        portal_form_ref = self.portal_form_ref.text().strip() or None
+
         try:
             checklist_id = int(checklist_id_raw) if checklist_id_raw else None
         except ValueError:
@@ -258,6 +266,7 @@ class TripsTab(QWidget):
                     reservation_id=reservation_id,
                     notes=notes,
                     checklist_id=checklist_id,
+                    portal_form_ref=portal_form_ref,
                 )
 
             self.log(f"Created trip: {name} (client_id={client_id})")

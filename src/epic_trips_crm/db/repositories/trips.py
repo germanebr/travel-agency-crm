@@ -45,6 +45,7 @@ class TripRepository(BaseRepository):
         reservation_id: int | None = None,
         notes: str | None = None,
         checklist_id: int | None = None,
+        portal_form_ref: str | None = None,
     ) -> Trip:
         """
         What it does:
@@ -68,6 +69,7 @@ class TripRepository(BaseRepository):
             reservation_id=reservation_id,
             notes=notes,
             checklist_id=checklist_id,
+            portal_form_ref=portal_form_ref,
         )
         self.session.add(trip)
         self.session.flush()
@@ -193,6 +195,22 @@ class TripRepository(BaseRepository):
             stmt = stmt.options(selectinload(Trip.client))
         return self.session.scalars(stmt).first()
 
+    def get_by_portal_form_ref(
+        self, portal_form_ref: str, *, include_client: bool = False
+    ) -> Trip | None:
+        """
+        What it does:
+        - Fetches trip by portal form reference (EVO...).
+        Why it matters:
+        - Lets you jump from portal form ID to the owning trip quickly.
+        Behavior:
+        - Returns None if not found.
+        """
+        stmt = select(Trip).where(Trip.portal_form_ref == portal_form_ref)
+        if include_client:
+            stmt = stmt.options(selectinload(Trip.client))
+        return self.session.scalars(stmt).first()
+
     def update(self, trip_id: int, **fields) -> Trip:
         """
         What it does:
@@ -201,6 +219,7 @@ class TripRepository(BaseRepository):
         - Form edits.
         Behavior:
         - If 'status' is provided, validates and normalizes it.
+        - Ignores unknown field names safely (hasattr guard).
         """
         trip = self.get(trip_id)
 
