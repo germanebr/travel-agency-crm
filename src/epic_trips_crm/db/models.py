@@ -21,9 +21,6 @@ from epic_trips_crm.db.base import Base
 
 SCHEMA = "epic_trips_crm"
 
-
-SCHEMA = "epic_trips_crm"
-
 trip_status_enum = ENUM(
     "Próximo",
     "Viajando",
@@ -66,11 +63,6 @@ provider_name_enum = ENUM(
     schema=SCHEMA,
     create_type=False,
 )
-
-# These enums already exist in Postgres. We reference them without creating types.
-# trip_status_enum = ENUM("trip_status", schema=SCHEMA, create_type=False)
-# sale_status_enum = ENUM("sale_status", schema=SCHEMA, create_type=False)
-# provider_name_enum = ENUM("provider_name", schema=SCHEMA, create_type=False)
 
 
 class Client(Base):
@@ -120,6 +112,9 @@ class Trip(Base):
 
     reservation_id: Mapped[int | None] = mapped_column(Integer, nullable=True, unique=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # NEW: Trip-level portal form reference (EVO...)
+    portal_form_ref: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     checklist_id: Mapped[int | None] = mapped_column(
         ForeignKey(f"{SCHEMA}.checklist.id", ondelete="RESTRICT", onupdate="NO ACTION"),
